@@ -31,6 +31,15 @@
 </head>
 <body class="bg-slate-50 text-slate-800">
 
+    <!-- Overlay untuk hari Sabtu dan Minggu -->
+    <div id="weekend-message-overlay" class="hidden fixed inset-0 bg-black flex items-center justify-center z-[9999] p-4">
+        <div class="text-white text-center">
+            <p class="text-2xl sm:text-3xl md:text-4xl font-bold mb-4">Maaf 🙏🏻</p>
+            <p class="text-xl sm:text-2xl md:text-3xl font-semibold">Saat ini kami tidak melayani pendaftaran reseller baru.</p>
+            <p class="text-lg sm:text-xl md:text-2xl mt-2">Silakan kunjungi kami kembali pada hari kerja.</p>
+        </div>
+    </div>
+
     <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
             <a href="#" class="text-2xl font-bold text-blue-600">
@@ -336,7 +345,35 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- [BARU] FUNGSI UNTUK MENU MOBILE ---
+            // --- Logika untuk menampilkan pesan di hari Sabtu dan Minggu ---
+            const today = new Date();
+            const dayOfWeek = today.getDay(); // 0 = Minggu, 6 = Sabtu
+
+            const weekendOverlay = document.getElementById('weekend-message-overlay');
+            const header = document.querySelector('header');
+            const main = document.querySelector('main');
+            const footer = document.querySelector('footer');
+
+            if (dayOfWeek === 0 || dayOfWeek === 6) { // Jika hari Minggu atau Sabtu
+                weekendOverlay.classList.remove('hidden');
+                // Sembunyikan konten utama agar hanya overlay yang terlihat
+                if (header) header.classList.add('hidden');
+                if (main) main.classList.add('hidden');
+                if (footer) footer.classList.add('hidden');
+                document.body.classList.remove('bg-slate-50'); // Hapus background default
+                document.body.classList.add('bg-black'); // Pastikan body benar-benar hitam
+            } else {
+                // Jika bukan hari Sabtu/Minggu, pastikan overlay tersembunyi dan konten terlihat
+                weekendOverlay.classList.add('hidden');
+                if (header) header.classList.remove('hidden');
+                if (main) main.classList.remove('hidden');
+                if (footer) footer.classList.remove('hidden');
+                document.body.classList.remove('bg-black');
+                document.body.classList.add('bg-slate-50');
+            }
+
+
+            // --- FUNGSI UNTUK MENU MOBILE ---
             const mobileMenuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
             const openIcon = document.getElementById('menu-open-icon');
@@ -360,7 +397,7 @@
                 });
             }
 
-            // --- [LAMA] Fungsi untuk form pendaftaran reseller ---
+            // --- Fungsi untuk form pendaftaran reseller ---
             const resellerForm = document.getElementById('resellerForm');
             if(resellerForm) {
                 resellerForm.addEventListener('submit', function(event) {
@@ -376,7 +413,7 @@
                 });
             }
 
-            // --- [LAMA] Fungsi untuk tombol Beli Buku ---
+            // --- Fungsi untuk tombol Beli Buku ---
             const buyButtonBuku = document.getElementById('buyButtonBuku');
             if(buyButtonBuku) {
                 buyButtonBuku.addEventListener('click', function(event) {
@@ -391,7 +428,7 @@
                 });
             }
 
-            // --- [LAMA] Fungsi untuk tombol Beli Polaroid ---
+            // --- Fungsi untuk tombol Beli Polaroid ---
             const buyButtonPolaroid = document.getElementById('buyButtonPolaroid');
             if(buyButtonPolaroid) {
                 buyButtonPolaroid.addEventListener('click', function(event) {
@@ -405,7 +442,7 @@
                 });
             }
 
-            // --- [LAMA] Fungsi untuk Image Slider ---
+            // --- Fungsi untuk Image Slider ---
             function setupSlider(sliderId, trackClass) {
                 const slider = document.getElementById(sliderId);
                 if (slider) {
@@ -423,9 +460,13 @@
                 }
             }
 
-            setupSlider('slider-buku', 'slider-track-buku');
-            setupSlider('slider-polaroid', 'slider-track-polaroid');
+            // Panggil setupSlider hanya jika bukan weekend, agar slider tidak berjalan di background
+            if (!(dayOfWeek === 0 || dayOfWeek === 6)) {
+                setupSlider('slider-buku', 'slider-track-buku');
+                setupSlider('slider-polaroid', 'slider-track-polaroid');
+            }
         });
     </script>
 </body>
 </html>
+
